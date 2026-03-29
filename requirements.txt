@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-jose
+passlib
+pandas
+requests
+dash
+plotly
+reportlab
