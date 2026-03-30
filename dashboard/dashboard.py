@@ -1,16 +1,14 @@
+import os
 import requests
 import pandas as pd
 import dash
 from dash import dcc, html, dash_table, Input, Output
 import plotly.express as px
 
-import os
-
 # =========================
 # BACKEND CONFIG (RENDER)
 # =========================
 BACKEND_BASE_URL = "https://fuel-backend-npaw.onrender.com"
-
 API_BASE = f"{BACKEND_BASE_URL}/api/telemetry"
 REPORT_BASE = f"{BACKEND_BASE_URL}/api/reports"
 ANALYTICS_BASE = f"{BACKEND_BASE_URL}/api/analytics"
@@ -30,7 +28,7 @@ ACCENT_CYAN = "#0891b2"
 
 def fetch_json(url: str, default: dict):
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=10)
         if response.status_code == 200:
             return response.json()
         return default
@@ -93,14 +91,14 @@ def kpi_card(title, value, color, icon):
                 ],
                 style={"marginBottom": "12px", "display": "flex", "alignItems": "center"},
             ),
-            html.Div(str(value), style={"fontSize": "28px", "fontWeight": "bold", "lineHeight": "1"}),
+            html.Div(str(value), style={"fontSize": "24px", "fontWeight": "bold", "lineHeight": "1.1"}),
         ],
         style={
             "background": f"linear-gradient(135deg, {color}, {PANEL_COLOR})",
             "color": "white",
-            "padding": "20px",
+            "padding": "18px",
             "borderRadius": "16px",
-            "minHeight": "120px",
+            "minHeight": "110px",
             "border": f"1px solid {CARD_BORDER}",
             "boxShadow": "0 8px 20px rgba(0,0,0,0.25)",
         },
@@ -247,6 +245,7 @@ def build_figures(asset_df, network_df, sensor_df, location_df, recent_df, stati
 )
 
 app = dash.Dash(__name__)
+server = app.server
 app.title = "Fuel Telemetry Live Control Room"
 
 app.layout = html.Div(
@@ -270,20 +269,20 @@ app.layout = html.Div(
 
         html.Div(
             [
-                html.Div(id="kpi-total-events", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-unique-assets", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-unique-gateways", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-gps-events", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-incident-count", style={"width": "19%", "display": "inline-block", "marginBottom": "12px"}),
+                html.Div(id="kpi-total-events", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-unique-assets", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-unique-gateways", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-gps-events", style={"width": "19%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-incident-count", style={"width": "19%", "display": "inline-block", "marginBottom": "12px", "verticalAlign": "top"}),
             ]
         ),
 
         html.Div(
             [
-                html.Div(id="kpi-latest-time", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-location-count", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-total-sales-liters", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px"}),
-                html.Div(id="kpi-total-revenue", style={"width": "24%", "display": "inline-block", "marginBottom": "12px"}),
+                html.Div(id="kpi-latest-time", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-location-count", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-total-sales-liters", style={"width": "24%", "display": "inline-block", "marginRight": "1%", "marginBottom": "12px", "verticalAlign": "top"}),
+                html.Div(id="kpi-total-revenue", style={"width": "24%", "display": "inline-block", "marginBottom": "12px", "verticalAlign": "top"}),
             ]
         ),
 
@@ -291,7 +290,6 @@ app.layout = html.Div(
             [
                 html.A(
                     "Download Incident PDF",
-                    id="incident-pdf-link",
                     href=f"{REPORT_BASE}/incident-pdf",
                     target="_blank",
                     style={
@@ -308,7 +306,6 @@ app.layout = html.Div(
                 ),
                 html.A(
                     "Download Sales PDF",
-                    id="sales-pdf-link",
                     href=f"{REPORT_BASE}/sales-pdf",
                     target="_blank",
                     style={
@@ -557,6 +554,5 @@ def refresh_live_dashboard(_):
 
 
 if __name__ == "__main__":
-    import os
     port = int(os.getenv("PORT", 10000))
     app.run(debug=False, host="0.0.0.0", port=port)
