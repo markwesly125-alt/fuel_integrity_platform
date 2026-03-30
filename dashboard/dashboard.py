@@ -4,9 +4,16 @@ import dash
 from dash import dcc, html, dash_table, Input, Output
 import plotly.express as px
 
-API_BASE = "http://127.0.0.1:8000/api/telemetry"
-REPORT_BASE = "http://127.0.0.1:8000/api/reports"
-ANALYTICS_BASE = "http://127.0.0.1:8000/api/analytics"
+import os
+
+# =========================
+# BACKEND CONFIG (RENDER)
+# =========================
+BACKEND_BASE_URL = "https://fuel-backend-npaw.onrender.com"
+
+API_BASE = f"{BACKEND_BASE_URL}/api/telemetry"
+REPORT_BASE = f"{BACKEND_BASE_URL}/api/reports"
+ANALYTICS_BASE = f"{BACKEND_BASE_URL}/api/analytics"
 
 BG_COLOR = "#0b1220"
 PANEL_COLOR = "#111827"
